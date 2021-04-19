@@ -5,7 +5,7 @@ clc;
 
 %% Loop all participants
 % whos = ["able","amp"];
-who = "able";
+who = "amp";
 if who == "able"
     from = 1;
     fin = 7;
@@ -52,15 +52,15 @@ catch
         order = 4;                          % order
         Gestures = cell(3,fl*numGestures*numberTrials);
         %% Load marked labels file
-        load(strcat('Participants/Par',partID,'/Marks',partID,'.mat'));
+        load(strcat('../Participants/Par',partID,'/Marks',partID,'.mat'));
         g_off = 0;
         count = 0;
         %% Process Participant Data
         for file = 1:size(Marks,1)
             try
-                M = csvread([strcat('..\Data Library\ParticipantData\F',partID) Marks{file,1}(1,5:end)]);
+                M = csvread([strcat('..\..\Data Library\ParticipantData\F',partID) Marks{file,1}(1,5:end)]);
             catch
-                M = csvread([strcat('..\Data Library\ParticipantData\P',partID) Marks{file,1}(1,5:end)]);
+                M = csvread([strcat('..\..\Data Library\ParticipantData\P',partID) Marks{file,1}(1,5:end)]);
             end
             M(1,36) = 0;
             M = M(:,20:36);
@@ -395,7 +395,7 @@ catch
         %% Save Trial Space to File
 %         save(strcat('Par',partID,'/',partID,'gestF1-',int2str(numberTrials),'.mat'),'gestF');
     %}
-     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %% Coherence Calculation - mean/median of Trials
         %{
         coh = cell(fl,numGestures);
@@ -432,12 +432,12 @@ catch
             end
         end
         %}
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %% Coherence Calculation - Concatenation of Trials
 %         %{
         coh = cell(fl,numGestures);
         winsize = floor(fs/(2/5));                      	% window length in seconds*fs
-        ovelp = floor(winsize*0.9);                     	% number of points of overlap 
+        ovelp = floor(winsize*0.9);                     	% number of points of overlap
         % Loop over Force Levels and Gestures
         for m=1:fl
             for w=1:numGestures
@@ -640,9 +640,12 @@ for m=1:fl
     end
     % Run NNMF
     opt = statset('MaxIter',100);
-    [W0,H0] = nnmf(coh_grp{m,1},k,'W0',w0,'H0',h0,'options',opt,'algorithm','mult');
-    nnmf_grp{m,1}.W = W0;
-    nnmf_grp{m,1}.H = H0;
+    [W,H] = nnmf(coh_grp{m,1},k,'W0',w0,'H0',h0,'options',opt,'algorithm','mult');
+    % Rearrange
+    [W_temp,H_temp] = rearrange(k,unit,freqs,W,H);
+    % Assign matrices
+    nnmf_grp{m,1}.W = W_temp;
+    nnmf_grp{m,1}.H = H_temp;
     clear w0 h0 W0 H0;
     % Plot NNMF
     %{
@@ -673,9 +676,12 @@ for m=1:fl
         end
         % Run NNMF
         opt = statset('MaxIter',100);
-        [W0,H0] = nnmf(coh_ges{m,w},k,'W0',w0,'H0',h0,'options',opt,'algorithm','mult');
-        nnmf_ges{m,w}.W = W0;
-        nnmf_ges{m,w}.H = H0;
+        [W,H] = nnmf(coh_ges{m,w},k,'W0',w0,'H0',h0,'options',opt,'algorithm','mult');
+        % Rearrange
+        [W_temp,H_temp] = rearrange(k,unit,freqs,W,H);
+        % Assign matrices
+        nnmf_ges{m,w}.W = W_temp;
+        nnmf_ges{m,w}.H = H_temp;
         clear w0 h0 W0 H0;
         % Plot NNMF
         %{
@@ -690,7 +696,7 @@ for m=1:fl
 end
 %%%%% NNMF Participant %%%%%%
 for i=from:fin
-    figure;
+%     figure;
     for m=1:fl
         for w=1:numGestures
             % NNMF Initialization
@@ -710,35 +716,13 @@ for i=from:fin
             opt = statset('MaxIter',100);
             [W,H] = nnmf(coh_part{1,i}{m,w},k,'W0',w0,'H0',h0,'options',opt,'algorithm','mult');
             % Rearrange
-            indic = zeros(1,k);
-            W_temp = zeros(size(W));
-            H_temp = zeros(size(H));
-            for ii=1:k-1
-                re_ind1 = ceil(unit*freqs(ii))+1;
-                re_ind2 = ceil(unit*freqs(ii+1));
-                fin_maxin = find(W(re_ind1:re_ind2,:)==max(W(re_ind1:re_ind2,:),[],'all'));
-                if (fin_maxin<=(re_ind2-re_ind1))
-                    W_temp(:,ii+1) = W(:,1);
-                    H_temp(ii+1,:) = H(1,:);
-                    indic(1) = 1;
-                elseif (fin_maxin>(re_ind2-re_ind1)*2)
-                    W_temp(:,ii+1) = W(:,3);
-                    H_temp(ii+1,:) = H(3,:);
-                    indic(3) = 1;
-                else
-                    W_temp(:,ii+1) = W(:,2);
-                    H_temp(ii+1,:) = H(2,:);
-                    indic(2) = 1;
-                end  
-            end
-            W_temp(:,1) = W(:,find(indic==0));
-            H_temp(1,:) = H(find(indic==0),:);
+            [W_temp,H_temp] = rearrange(k,unit,freqs,W,H);
             % Assign matrices
             nnmf_part{1,i}(m,w).W = W_temp;
             nnmf_part{1,i}(m,w).H = H_temp;
             clear W; clear H;
             % Plot NNMF
-%            %{
+           %{
             subplot(fl,numGestures,w+(m-1)*numGestures);
             plot(nf,nnmf_part{1,i}(m,w).W,'linew',1.1);
             set(gca,'xlim',[0 35]);
@@ -898,7 +882,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Boxplots
 numCommGes = 5;
-%% Upload amp adjmat_ges
+%% Differential Boxplots - Upload amp adjmat_ges
 %{
 try
     adjmatAmp_ges = load(strcat('Amputees','-adjmat-ges.mat'));
@@ -908,7 +892,7 @@ catch
         save(strcat(titl,'-adjmat-ges.mat'),'adjmat_ges');
     end
 end
-%% Differential Boxplots
+% Generate Differential Boxplot
 [bx_CC,bx_NS,bx_ED] = bx_plt_prep2(numCommGes,k,adjmat_ges,adjmatAmp_ges);
 bx_metrics = {bx_CC,bx_NS,bx_ED};
 type = 'Differential Plot';
@@ -980,7 +964,7 @@ for gest=1:numGestures
 end
 %}
 %% per Participant
-% %{
+%{
 par = 11;           % Participant
 gest = 3;          % Gesture
 plt_connmat_par(GestList{gest},par,adjmat_part{1,par}(:,gest));   
