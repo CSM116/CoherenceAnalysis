@@ -2,25 +2,15 @@
 clear;
 close all;
 clc;
-
 %% Loop all participants
 % whos = ["able","amp"];
-who = "amp";
+who = "able";
 if who == "able"
-    from = 1;
-    fin = 7;
-    fl = 3;
-    titl = "Able-bodied";
-    numGestures = 7;
+    from = 1;    fin = 7;    fl = 3;    titl = "Able-bodied";    numGestures = 7;
 else
-    from = 11;
-    fin = 13;
-    fl = 3;
-    titl = "Amputees";
-    numGestures = 5;
+    from = 11;   fin = 13;   fl = 3;    titl = "Amputees";       numGestures = 5;
 end
 coh_part = cell(1,fin-from+1);       	% Coherence cell array of Participants
-
 %% Mapping Gestures Table
 if from >= 11 && from <= 20
     GestList = ["Rest" "Flexion" "Extension" "Pronation" "Supination"];
@@ -28,8 +18,6 @@ else
     GestList = ["Rest" "Flexion" "Extension" "Pronation" "Supination" "Adduction" "Abduction"];
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load Coherence Results / Process Data
@@ -517,7 +505,6 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Coherence - Gesture
 coh_ges = cell(fl,numGestures);
@@ -618,80 +605,18 @@ end
 %% Non-negative Matrix Factorization - Group Results
 % %{
 %%%%%% NNMF Group %%%%%%
-k = 3;                                  % Number of components
+k = 3;                          % Number of components
 freqs = [4,15,150];
 nnmf_grp = cell(fl,1);
 nnmf_ges = cell(fl,numGestures);
 nnmf_part = cell(1,fin-from+1);           
-% figure;
 for m=1:fl
-    % NNMF Initialization
-    unit = length(coh_grp{m,1})/500;
-    w0 = unifrnd(0,0.0001,length(coh_grp{m,1}),k);
-    h0 = unifrnd(0,0.05,k,size(coh_grp{m,1},2));
-    indf = 0;
-    for i=1:k
-        ind = indf;
-        indf = ceil(unit*freqs(i));
-        mn = median(coh_grp{m,1}(ind+1:indf,:),2);
-        r = unifrnd(max(mn),max(mn)+0.1,1,indf-ind);
-%         r = unifrnd(0.9,1,1,indf-ind);
-        w0(ind+1:ind+length(r),i) = r;
-    end
-    % Run NNMF
-    opt = statset('MaxIter',100);
-    [W,H] = nnmf(coh_grp{m,1},k,'W0',w0,'H0',h0,'options',opt,'algorithm','mult');
-    % Rearrange
-    [W_temp,H_temp] = rearrange(k,unit,freqs,W,H);
-    % Assign matrices
-    nnmf_grp{m,1}.W = W_temp;
-    nnmf_grp{m,1}.H = H_temp;
-    clear w0 h0 W0 H0;
-    % Plot NNMF
-    %{
-    subplot(fl,1,m);
-    plot(nf,nnmf_grp{m,1}.W,'linew',1.1);
-    set(gca,'xlim',[0 35]);
-    title({"NNMF - "+titl+" - ForceLevel: "+int2str(m)});
-    legend({'component-1','component-2','component-3'});
-    xlabel('Frequency [Hz]');
-    %}
+    [nnmf_grp{m,1}.H,nnmf_grp{m,1}.W] = nnmf_mat(m,1,0,k,coh_grp,freqs,nf,fl,numGestures,titl,GestList,0);
 end
 %%%%%% NNMF gesture %%%%%%
-% figure;
 for m=1:fl                              
     for w=1:numGestures
-        % NNMF Initialization
-        unit = length(coh_ges{m,w})/500;
-        w0 = unifrnd(0,0.0001,length(coh_ges{m,w}),k);
-        h0 = unifrnd(0,0.005,k,size(coh_ges{m,w},2));
-        indf = 0;
-        for i=1:k
-            ind = indf;
-            indf = ceil(unit*freqs(i));
-            mn = median(coh_ges{m,w}(ind+1:indf,:),2);
-            r = unifrnd(max(mn),max(mn)+0.1,1,indf-ind);
-%             r = unifrnd(0.9,1,1,indf-ind);
-            w0(ind+1:ind+length(r),i) = r;
-        end
-        % Run NNMF
-        opt = statset('MaxIter',100);
-        [W,H] = nnmf(coh_ges{m,w},k,'W0',w0,'H0',h0,'options',opt,'algorithm','mult');
-        % Rearrange
-        [W_temp,H_temp] = rearrange(k,unit,freqs,W,H);
-        % Assign matrices
-        nnmf_ges{m,w}.W = W_temp;
-        nnmf_ges{m,w}.H = H_temp;
-        clear w0 h0 W0 H0;
-        % Plot NNMF
-        %{
-        subplot(fl,numGestures,w+(m-1)*numGestures);
-        plot(nf,nnmf_ges{m,w}.W,'linew',1.1);
-        ylim([0 1]);
-        set(gca,'xlim',[0 35]);
-        title({titl+" - ForceLev. "+int2str(m),"Gesture: "+GestList(w)});
-        xlabel('Frequency [Hz]');
-        %}
+        [nnmf_ges{m,w}.H, nnmf_ges{m,w}.W] = nnmf_mat(m,w,0,k,coh_ges,freqs,nf,fl,numGestures,titl,GestList,0);
     end
 end
 %%%%% NNMF Participant %%%%%%
@@ -699,36 +624,7 @@ for i=from:fin
 %     figure;
     for m=1:fl
         for w=1:numGestures
-            % NNMF Initialization
-            unit = length(coh_part{1,i}{m,w})/500;
-            w0 = unifrnd(0,0.0001,length(coh_part{1,i}{m,w}),k);
-            h0 = unifrnd(0,0.05,k,size(coh_part{1,i}{m,w},2));
-            indf = 0;
-            for j=1:k
-                ind = indf;
-                indf = ceil(unit*freqs(j));
-                mn = median(coh_part{1,i}{m,w}(ind+1:indf,:),2);
-                r = unifrnd(max(mn),max(mn)+0.1,1,indf-ind);
-%                 r = unifrnd(0.9,1,1,indf-ind);
-                w0(ind+1:ind+length(r),j) = r;
-            end
-            % Run NNMF
-            opt = statset('MaxIter',100);
-            [W,H] = nnmf(coh_part{1,i}{m,w},k,'W0',w0,'H0',h0,'options',opt,'algorithm','mult');
-            % Rearrange
-            [W_temp,H_temp] = rearrange(k,unit,freqs,W,H);
-            % Assign matrices
-            nnmf_part{1,i}(m,w).W = W_temp;
-            nnmf_part{1,i}(m,w).H = H_temp;
-            clear W; clear H;
-            % Plot NNMF
-           %{
-            subplot(fl,numGestures,w+(m-1)*numGestures);
-            plot(nf,nnmf_part{1,i}(m,w).W,'linew',1.1);
-            set(gca,'xlim',[0 35]);
-            title({titl+" - ForceLev. "+int2str(m),"Gesture: "+GestList(w)});
-            xlabel('Frequency [Hz]');
-            %}
+            [nnmf_part{1,i}(m,w).H ,nnmf_part{1,i}(m,w).W] = nnmf_mat(m,w,i,k,coh_part,freqs,nf,fl,numGestures,titl,GestList,0);
         end
     end
 end
@@ -746,131 +642,32 @@ try
 catch
     addpath("C:\Users\csm116\Downloads\BCT\2019_03_03_BCT");
 end
+clc;
 s = {'FCR' 'FCR' 'FCR' 'BRA' 'BRA' 'EDC'};
 t = {'BRA' 'EDC' 'FCU' 'EDC' 'FCU' 'FCU'};
 varnames = {'G', 'A', 'BC', 'CC', 'GE', 'ME', 'NS', 'ED','SD'};
+varDescr = {'Connection Matrix', 'Adjancency Matrix', 'Betweenness Centrality',...
+    'Clustering Coefficient', 'Global Efficiency', 'Median of Edges', 'Node Strength',...
+    'Edges','Standard Deviation'};
 th_op = 0;      % 0:no_thresholding / 1:std-method / 2:top%-method / 3:absoluteVal-method
-th_std = 2.5;   % Number of standard deviations away from median 
-th_per = 80;    % Percetage of top edges
-th_abs = 0.1; 	% Minimum threshold value
+th_val = 0.1;   % for 1:Number of stds / 2:% of top edges / 3: min thres value
 adjmat_grp = cell(fl,1);
-tbl0 = cell2table(cell(0,length(varnames)), 'VariableNames', varnames);
 for m=1:fl
-    NS = zeros(1,4);
-    for j=1:k
-        G = graph(s,t,nnmf_grp{m,1}.H(j,:));
-        ED = G.Edges.Weight';
-        % Threshold
-%         %{
-        if th_op==0
-            ind = 1;
-        elseif th_op==1
-%             ind = ED < (median(ED)+std(ED)*th_std) & ED > (median(ED)-std(ED)*th_std);	% index of values inside 1 std from median
-            ind = ED > (max(ED)-std(ED)*th_std);	% index of values higher than 1 std from median
-
-        elseif th_op==2
-            ind = zeros(1,6);
-            [B,I] = maxk(ED,round(6*th_per/100));
-            ind(I) = 1;
-        else
-            ind = ED > th_abs;
-        end
-        G = rmedge(G,find(~ind));                                               % remove edges outside range
-        ED = G.Edges.Weight';
-%         %}
-        A = adjacency(G,'weighted');
-        BC = betweenness_wei(A);
-        CC = clustering_coef_wu(A);
-        GE = efficiency_wei(A,0);       
-        ME = median(G.Edges.Weight);	
-        SD = std(G.Edges.Weight);
-        for i=1:size(G.Nodes,1)
-            NS(1,i) = sum(G.Edges.Weight(outedges(G,G.Nodes.Name(i))));
-        end
-        tbl0 = [tbl0;{G,A,{BC},{full(CC')},GE,ME,{NS},{ED},SD}];
-    end
-    adjmat_grp{m,1} = tbl0;
-    tbl0 = cell2table(cell(0,length(varnames)), 'VariableNames', varnames);
+    adjmat_grp{m,1} = connect_mat(m,1,0,k,s,t,nnmf_grp,th_op,th_val,varnames);
 end
 %% Connectivity Matrix and Metrics - per Gesture
 adjmat_ges = cell(fl,numGestures);
-tbl0 = cell2table(cell(0,length(varnames)), 'VariableNames', varnames);
 for m=1:fl
     for w=1:numGestures
-        NS = zeros(1,4);
-        for j=1:k       
-            G = graph(s,t,nnmf_ges{m,w}.H(j,:));
-            ED = G.Edges.Weight';
-            % Threshold
-%             %{
-            if th_op==0
-                ind = 1;
-            elseif th_op==1
-                ind = ED < (median(ED)+std(ED)*th_std) & ED > (median(ED)-std(ED)*th_std);	% index of values inside 1 std from median
-            elseif th_op==2
-                ind = zeros(1,6);
-                [B,I] = maxk(ED,round(6*th_per/100));
-                ind(I) = 1;
-            else
-                ind = ED > th_abs;
-            end          
-            G = rmedge(G,find(~ind));                                             	% remove edges outside range
-            ED = G.Edges.Weight';
-%             %}
-            A = adjacency(G,'weighted');
-            BC = betweenness_wei(A); 
-            CC = clustering_coef_wu(A); 
-            GE = efficiency_wei(A,0);
-            ME = median(G.Edges.Weight);
-            SD = std(G.Edges.Weight);
-            for i=1:size(G.Nodes,1)
-                NS(1,i) = sum(G.Edges.Weight(outedges(G,G.Nodes.Name(i))));
-            end
-            tbl0 = [tbl0;{G,A,{BC},{full(CC')},GE,ME,{NS},{ED},SD}];
-        end
-        adjmat_ges{m,w} = tbl0;
-        tbl0 = cell2table(cell(0,length(varnames)), 'VariableNames', varnames);
+        adjmat_ges{m,w} = connect_mat(m,w,0,k,s,t,nnmf_ges,th_op,th_val,varnames);
     end
 end
 %% Connectivity Matrix and Metrics - per Participant
 adjmat_part = cell(1,fin-from+1);
-tbl0 = cell2table(cell(0,length(varnames)), 'VariableNames', varnames);
 for i=from:fin
     for m=1:fl
         for w=1:numGestures
-            NS = zeros(1,4);
-            for j=1:k
-                G = graph(s,t,nnmf_part{1,i}(m,w).H(j,:));
-                ED = G.Edges.Weight';
-                % Threshold
-%                 %{
-                if th_op==0
-                    ind = 1;
-                elseif th_op==1
-                    ind = ED < (median(ED)+std(ED)*th_std) & ED > (median(ED)-std(ED)*th_std);	% index of values inside 1 std from median
-                elseif th_op==2
-                    ind = zeros(1,6);
-                    [B,I] = maxk(ED,round(6*th_per/100));
-                    ind(I) = 1;
-                else
-                    ind = ED > th_abs;
-                end                
-                G = rmedge(G,find(~ind));                                               % remove edges outside range
-                ED = G.Edges.Weight';
-%                 %}
-                A = adjacency(G,'weighted');
-                BC = betweenness_wei(A); 
-                CC = clustering_coef_wu(A); 
-                GE = efficiency_wei(A,0);
-                ME = median(G.Edges.Weight);
-                SD = std(G.Edges.Weight);
-                for n=1:size(G.Nodes,1)
-                    NS(1,n) = sum(G.Edges.Weight(outedges(G,G.Nodes.Name(n))));
-                end
-                tbl0 = [tbl0;{G,A,{BC},{full(CC')},GE,ME,{NS},{ED},SD}];
-            end
-            adjmat_part{1,i}{m,w} = tbl0;
-            tbl0 = cell2table(cell(0,length(varnames)), 'VariableNames', varnames);
+            adjmat_part{1,i}{m,w} = connect_mat(m,w,i,k,s,t,nnmf_part,th_op,th_val,varnames);
         end
     end
 end
@@ -898,13 +695,13 @@ bx_metrics = {bx_CC,bx_NS,bx_ED};
 type = 'Differential Plot';
 bx_plt(bx_metrics,k,varnames,GestList,titl,1);
 %}
-%% Boxplots Average of Participants using Gestures
+%% Boxplots Average of Coherence across Participants
 % %{
 [bx_CC,bx_NS,bx_ED] = bx_plt_prep2(numCommGes,k,adjmat_ges);
 bx_metrics = {bx_CC,bx_NS,bx_ED};
-bx_plt(bx_metrics,k,varnames,GestList,titl,0);
+bx_plt(bx_metrics,k,varDescr,GestList,titl,0,'t');
 %}
-%% Boxplots Average of Participants using Participants
+%% Boxplots Average of Network across Participants 
 % %{
 [bx_CC,bx_NS,bx_ED] = bx_plt_prep(numCommGes,from,fin,adjmat_part);
 bx_CC = mean(bx_CC(:,:,:,from:fin),4);bx_CC(bx_CC==0) = NaN;        
@@ -914,7 +711,7 @@ bx_metrics = {bx_CC,bx_NS,bx_ED};
 bx_plt(bx_metrics,k,varnames,GestList,titl,0);
 %}
 %% Boxplots All Participants using Participants
-% %{
+%{
 % GE
 [bx_CC,bx_NS,bx_ED,bx_GE] = bx_plt_prep(numCommGes,from,fin,adjmat_part);
 tmp_bx = num2cell(bx_GE(:,:,:,from:fin), [1 2 3]);
@@ -933,7 +730,7 @@ bx_metrics = {bx_CC,bx_NS,bx_ED,bx_GE};
 bx_plt(bx_metrics,k,varnames,GestList,titl,0);
 %}
 %% Boxplots Average of Nodes using Participants
-% %{
+%{
 [bx_CC,bx_NS,bx_ED] = bx_plt_prep(numCommGes,from,fin,adjmat_part);
 % CC
 bx_CC = mean(bx_CC(:,:,:,from:fin),1); 
@@ -971,6 +768,45 @@ plt_connmat_par(GestList{gest},par,adjmat_part{1,par}(:,gest));
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Heatmap Matrix of Average across Coherence
+for w=1:numCommGes
+    figure;
+    for i=1:k
+        subplot(1,k,i);
+        h = heatmap(adjmat_ges{1,w}.A{i,1},'Colormap', flipud(hot));
+        caxis([0 round(max(cell2mat(adjmat_ges{1,w}.A),[],'all'),2)]);
+        h.Title = {strcat(titl,' - ',GestList(w)),strcat('Adjancency Matrix: k',int2str(i))};
+        h.YData = {'FCR','BRA','EDC','FCU'};
+        h.XData = h.YDisplayData;
+    end
+end
+%% Heatmap Matrix of Average across Network
+tmp = 0;
+A_av = cell(k,numGestures);
+for w=1:numGestures
+    for i=1:k
+        for m=from:fin
+            tmp = tmp + adjmat_part{1,m}{1,w}.A{i,1};
+        end
+        tmp = tmp/(fin-from+1);
+        A_av{i,w} = tmp;
+    end
+end
+% Generate Heatmap Matrix
+for w=1:numCommGes
+    figure;
+    for i=1:k
+        subplot(1,k,i);
+        h = heatmap(A_av{i,w},'Colormap', flipud(hot)); %flipud(jet(25)
+        caxis([0 round(max(cell2mat(A_av(:,w)),[],'all'),2)]);
+        h.Title = {strcat(titl,' - ',GestList(w)),strcat('Adjancency Matrix: k',int2str(i))};
+        h.YData = {'FCR','BRA','EDC','FCU'};
+        h.XData = h.YDisplayData;
+    end
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

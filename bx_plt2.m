@@ -1,4 +1,4 @@
-function [] = bx_plt2(bx_XX,i,a)
+function [] = bx_plt2(bx_XX,i,a,type)
     tmp = squeeze(bx_XX(:,i,:));
     boxplot(tmp,'whisker', inf);
     set(gca,'TickLength',[0 0])
@@ -26,8 +26,12 @@ function [] = bx_plt2(bx_XX,i,a)
     for j=1:lim-1
         ylimpos = max(tmp(:,lim-j:lim),[],'all');
         for ii=lim-j:lim-1
-            [h,p] = ttest2(tmp(:,lim-j),tmp(:,ii+1));
-            if (p < 0.05); col ='red'; else; col ='black'; end
+            if (type=='t')
+                [h,p] = ttest2(tmp(:,lim-j),tmp(:,ii+1));
+            elseif (type=='w')
+                [p,h] = ranksum(tmp(:,lim-j),tmp(:,ii+1));
+            end
+            if (h); col ='red'; else; col ='black'; end
             ylimpos = ylimpos+yspace1 + off;
             bx_connector([lim-j ii+1],[ylimpos ylimpos],col);
             ypos = ylimpos + yspace2;
@@ -37,6 +41,11 @@ function [] = bx_plt2(bx_XX,i,a)
         end
     end
     % Text two sample t-test
-    text((lim/2)-0.3,ypos+yspace1,'Two-sample t-test p-values','FontSize',9,'fontweight','bold');                
+    if (type=='t')
+        texto = 'Two-sample t-test p-values';
+    elseif (type=='w')
+        texto = 'Wilcoxon ranksum p-values';
+    end
+    text((lim/2)-0.3,ypos+yspace1,texto,'FontSize',9,'fontweight','bold');                
     hold off;
 end
