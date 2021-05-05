@@ -21,21 +21,22 @@ function plt_connmat_grp(titl,connmat_grp)   % args: connect_matrix, component
         for j=1:k
             subplot(size(connmat_grp,1),k,j+k*(m-1));
             % Load forearm cross-section image
-            %{
+%             %{
             axis([-2 2 -2 2]);
-            I = imread('cross_forearm.png');
-            I = I(:,:,1);
-            image('XData',[-2 2],'YData',[2 -2],'CData',I) ;
-            colormap(gcf, gray(256));
+            I = imread('Cross-Forearm.png');
+            image('XData',[-1.75 1.75],'YData',[1.75 -1.75],'CData',I) ;
+%             alpha(0.45);
+%             colormap(gcf, gray(256));
             hold on;
             %}
             % Plot Graph
             G = connmat_grp{m,1}.G{j,1};
-            h = plot(G,'Layout','subspace','EdgeLabel',G.Edges.Weight);
-            set(gca,'XColor', 'none','YColor','none');
+            h = plot(G,'Layout','subspace','EdgeLabel',G.Edges.Weight,'NodeLabel',{});
+            set(gca,'XColor','none','YColor','none');
+            set(gcf,'color','w');
             % Position of nodes
-            h.XData = [-1,0,1,0.5];
-            h.YData = [0,0.8,0.6,-1];
+            h.XData = [0.7,  1.75,  0.5,  -1.5];
+            h.YData = [1.8,  0.55, -1.85,   1.1];
             hold off;
             % Change width of Edges
             for i=1:size(G.Edges,1)

@@ -675,7 +675,6 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Boxplots
 numCommGes = 5;
@@ -693,7 +692,7 @@ end
 [bx_CC,bx_NS,bx_ED] = bx_plt_prep2(numCommGes,k,adjmat_ges,adjmatAmp_ges);
 bx_metrics = {bx_CC,bx_NS,bx_ED};
 type = 'Differential Plot';
-bx_plt(bx_metrics,k,varnames,GestList,titl,1);
+bx_plt(bx_metrics,k,varDescr,GestList,titl,1,'t');
 %}
 %% Boxplots Average of Coherence across Participants
 % %{
@@ -708,7 +707,7 @@ bx_CC = mean(bx_CC(:,:,:,from:fin),4);bx_CC(bx_CC==0) = NaN;
 bx_NS = mean(bx_NS(:,:,:,from:fin),4);bx_NS(bx_NS==0) = NaN;
 bx_ED = mean(bx_ED(:,:,:,from:fin),4);bx_ED(bx_ED==0) = NaN;
 bx_metrics = {bx_CC,bx_NS,bx_ED};
-bx_plt(bx_metrics,k,varnames,GestList,titl,0);
+bx_plt(bx_metrics,k,varDescr,GestList,titl,0,'t');
 %}
 %% Boxplots All Participants using Participants
 %{
@@ -753,7 +752,7 @@ bx_plt(bx_metrics,k,varnames,GestList,titl,0);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Group Connectivity Matrix 
-plt_connmat_grp(titl,adjmat_grp);
+% plt_connmat_grp(titl,adjmat_grp);
 %% per Gesture
 % %{
 for gest=1:numGestures
@@ -770,7 +769,7 @@ plt_connmat_par(GestList{gest},par,adjmat_part{1,par}(:,gest));
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Heatmap Matrix of Average across Coherence
+%% Heatmap Matrix of Average of Coherence
 for w=1:numCommGes
     figure;
     for i=1:k
@@ -782,7 +781,7 @@ for w=1:numCommGes
         h.XData = h.YDisplayData;
     end
 end
-%% Heatmap Matrix of Average across Network
+%% Heatmap Matrix of Average of Network
 tmp = 0;
 A_av = cell(k,numGestures);
 for w=1:numGestures
@@ -811,7 +810,7 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% BarPlot Network Metrics - Group Results 
-% %{
+%{
 figure;
 X = categorical(varnames(3:end));
 X = reordercats(X,varnames(3:end));
@@ -836,7 +835,7 @@ end
 %}
 
 %% BarPlot Network Metrics - per Gesture
-% %{
+%{
 legnd = cell.empty(0,k);
 for i=1:k
     legnd = [legnd,{strcat('Component-',int2str(i))}];
