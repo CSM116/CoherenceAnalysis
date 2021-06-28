@@ -1,10 +1,18 @@
 function [adjmat] = connect_mat(m,w,i,k,s,t,nnmf_x,th_op,th_val,varnames)
     tbl0 = cell2table(cell(0,length(varnames)), 'VariableNames', varnames);
     for j=1:k
-        if (i==0)
-            G = graph(s,t,nnmf_x{m,w}.H(j,:));
-        else
-            G = graph(s,t,nnmf_x{1,i}(m,w).H(j,:));
+        try
+            if (i==0)
+                G = graph(s,t,nnmf_x{m,w}.H(j,:));
+            else
+                G = graph(s,t,nnmf_x{1,i}(m,w).H(j,:));
+            end
+        catch
+            if (i==0)
+                G = graph(s,t,nnmf_x{m,w});
+            else
+                G = graph(s,t,nnmf_x{1,i}{m,w});
+            end
         end
         ED = G.Edges.Weight';
         % Threshold
