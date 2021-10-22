@@ -1,9 +1,17 @@
-function [delta, probs] = bx_plt2(bx_XX,i,a,type)
+function [delta, probs, stats] = bx_plt2(bx_XX,i,a,type)
     delta = zeros(1,6);
     probs = zeros(1,6);
     tmp = squeeze(bx_XX(:,i,:));
     newcolors = [0.75 0.17 0.17;0.80 0.42 0.00;0.37 0.15 0.70;0.15 0.55 0.10];
     boxplot(tmp,'whisker', inf, 'Colors', newcolors);
+    %Plot individual points for amputee participants
+    %{
+    hold on
+    for i=1:size(tmp,2)
+        scatter(i*ones(size(tmp,1),1),tmp(:,i),40,1.2*newcolors(i,:),'filled','MarkerEdgeColor',0.8*newcolors(i,:));
+        hold on;
+    end
+    %}
     set(findobj(gca,'type','line'),'linew',1.1)
     med_lines = findobj(gcf, 'type', 'line', 'Tag', 'Median');
     set(med_lines, 'linew', 1.75);
@@ -23,7 +31,7 @@ function [delta, probs] = bx_plt2(bx_XX,i,a,type)
         txt_bajo = bajo-diff*0.07;
         text(1.7,txt_bajo-diff*0.035,'One-sample t-test p-values','FontSize',9,'fontweight', 'bold');
         for ii=1:size(bx_XX,3)
-            if (p(ii)<0.05); col ='red'; else; col ='black'; end
+            if (p(ii)<0.05); col ='red'; else; col ='w'; end
             txt = [num2str(p(ii), 2)];
             text(ii-0.1,txt_bajo, txt, 'FontSize',9, 'Color',col);
         end
@@ -35,14 +43,19 @@ function [delta, probs] = bx_plt2(bx_XX,i,a,type)
         ylimpos = max(tmp(:,lim-j:lim),[],'all');
         for ii=lim-j:lim-1
             if (type=='t')
-                [h,p] = ttest2(tmp(:,lim-j),tmp(:,ii+1));
+%                 'Alpha',0.0027
+                [h,p,ci,st] = ttest2(tmp(:,lim-j),tmp(:,ii+1),'Alpha',0.05);
                 delta(jj) = -100*((mean(tmp(:,lim-j))-mean(tmp(:,ii+1)))/mean(tmp(:,lim-j)));
                 probs(jj) = p;
+                stats(jj) = st;
             elseif (type=='w')
-                [p,h] = ranksum(tmp(:,lim-j),tmp(:,ii+1));
+                [p,h,st] = ranksum(tmp(:,lim-j),tmp(:,ii+1));
+                delta(jj) = -100*((mean(tmp(:,lim-j))-mean(tmp(:,ii+1)))/mean(tmp(:,lim-j)));
+                probs(jj) = p;
+                stats(jj) = st;
             end
             jj = jj+1;
-            if (h); col ='red'; else; col ='black'; end
+            if (h); col ='red'; else; col ='w'; end
             ylimpos = ylimpos+yspace1 + off;
             bx_connector([lim-j ii+1],[ylimpos ylimpos],col);
             ypos = ylimpos + yspace2;

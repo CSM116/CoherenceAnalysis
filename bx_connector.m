@@ -1,6 +1,6 @@
 function [] = bx_connector(xpos,ypos,color)
     if nargin<3
-      color = 'k';
+      color = 'w';
     end
 %     style = ':';
 %     linew = 1.175;

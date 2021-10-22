@@ -18,7 +18,7 @@ function plt_connmat_grp(titl_ges,connmat_grp)   % args: connect_matrix, compone
         minv = 0; %min(H,[],'all');
         maxn = 2; %max(N,[],'all');
         minn = 0; %min(N,[],'all');
-        tiledlayout(k,size(connmat_grp,1),'Padding','compact','TileSpacing','none');
+        tiledlayout(k,size(connmat_grp,1),'TileSpacing','none');
         for j=1:k
             nexttile(j+k*(m-1));
 %             subplot(size(connmat_grp,1),k,j+k*(m-1));
@@ -41,12 +41,16 @@ function plt_connmat_grp(titl_ges,connmat_grp)   % args: connect_matrix, compone
             cb.Layout.Tile = 'east';
             J = customcolormap([0 1], [1 1 1; 0 0 1]);
             colormap(flip(J));
-            caxis([0.1 0.9]);
+            caxis([0.1 0.55]);
+%             cb.Ticks = linspace(0.05,0.65,7);
+%             cb.TickLabels = num2cell(0.05:0.1:0.65);
             if (j==k)
                 cb = colorbar;
                 set(cb,'visible','on','Fontsize',11);
                 cb.Layout.Tile = 'east';
-                caxis([0.1 0.9]);
+%                 cb.Ticks = linspace(0.05,0.65,7);
+%                 cb.TickLabels = num2cell(0.05:0.1:0.65);
+                caxis([0.1 0.55]);
             else
                 colorbar('off');
             end
@@ -78,7 +82,7 @@ function plt_connmat_grp(titl_ges,connmat_grp)   % args: connect_matrix, compone
 %                 if ns<=9; highlight(h,G.Nodes.Name(i),'NodeColor','c');end
             end
 %             title({titl+" - ForceLevel: "+int2str(m),"Connectivity Matrix - Component: "+int2str(j)});
-            component = ["1-5 Hz","5-15 Hz","15-35 Hz"];
+            component = ["1-5 Hz","5-12 Hz","12-35 Hz"];
             ylabel(strcat("Component: ", component(j)),'FontSize',13.5,'Fontweight', 'bold');
 %             title({titl,component(j)});
         end

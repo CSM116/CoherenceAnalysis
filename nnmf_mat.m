@@ -61,7 +61,7 @@ function [H_temp,W_temp] = nnmf_mat(m,w,i,k,coh_x,freqs,nf,fl,numGestures,titl,G
         set(gca,'xlim',[0 35],'ylim',[0 limy]);
 %         title({titl+" - ForceLev. "+int2str(m),GestList(w)});
         title({titl,GestList(w)});
-        legend(["1-5 Hz","5-15 Hz","15-35 Hz"]);
+        legend(["1-5 Hz","5-12 Hz","12-40 Hz"]);
         set(gcf,'color','w'); % Set background colour to white
     end
 end
