@@ -72,7 +72,7 @@ for kk=1:k  % index component
     y_pos = 0.365-(kk-1)*0.065;
     prb = probs{kk,1}(1);
     delt = delta{kk,1}(1);
-    stat = stats{kk,1}(1).tstat;
+    sta = stats{kk,1}(1).tstat;
     if (prb<alpha)
         if(prb<adj_alpha); col='red'; else; col='orange'; end
         if (delt<0); sym = '\color{red}\downarrow'; else ; sym = '\color{blue}\uparrow'; end
@@ -88,6 +88,7 @@ for kk=1:k  % index component
     for i = 1:2
         prb = probs{kk,1}(i+1);
         delt = delta{kk,1}(i+1);
+        sta = stats{kk,1}(i+1).tstat;
         if (prb<alpha)
             if(prb<adj_alpha); col='red'; else; col='orange'; end
             if (delt<0); sym = '\color{red}\downarrow'; else ; sym = '\color{blue}\uparrow'; end
@@ -105,6 +106,7 @@ for kk=1:k  % index component
     for i = 1:3
         prb = probs{kk,1}(i+3);
         delt = delta{kk,1}(i+3);
+        sta = stats{kk,1}(i+3).tstat;
         if (prb<alpha)
             if(prb<adj_alpha); col='red'; else; col='orange'; end
             if (delt<0); sym = '\color{red}\downarrow'; else ; sym = '\color{blue}\uparrow'; end
@@ -124,6 +126,7 @@ for kk=1:k  % index component
     y_pos = 0.165-(kk-1)*0.065;
     prb = probs{kk,1}(1);
     delt = -delta{kk,1}(1);
+    sta = stats{kk,1}(1).tstat;
     if (prb<alpha)
         if(prb<adj_alpha); col='red'; else; col='orange'; end
         if (delt<0); sym = '\color{red}\downarrow'; else ; sym = '\color{blue}\uparrow'; end
@@ -139,6 +142,7 @@ for kk=1:k  % index component
     for i = 1:2
         prb = probs{kk,1}(i+1);
         delt = -delta{kk,1}(i+1);
+        sta = stats{kk,1}(i+1);
         if (prb<alpha)
             if(prb<adj_alpha); col='red'; else; col='orange'; end
             if (delt<0); sym = '\color{red}\downarrow'; else ; sym = '\color{blue}\uparrow'; end
@@ -156,6 +160,7 @@ for kk=1:k  % index component
     for i = 1:3
         prb = probs{kk,1}(i+3);
         delt = -delta{kk,1}(i+3);
+        sta = stats{kk,1}(i+1).tstat;
         if (prb<alpha)
             if(prb<adj_alpha); col='red'; else; col='orange'; end
             if (delt<0); sym = '\color{red}\downarrow'; else ; sym = '\color{blue}\uparrow'; end

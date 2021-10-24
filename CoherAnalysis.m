@@ -980,7 +980,7 @@ end
 %}
 %}
 %% Boxplots Average of Nodes using Participants
-% %{
+%{
 [bx_CC,bx_NS,bx_ED] = bx_plt_prep(numCommGes,from,fin,adjmat_part);
 % CC
 bx_CC = mean(bx_CC(:,:,:,from:fin),1); 

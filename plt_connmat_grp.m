@@ -82,7 +82,7 @@ function plt_connmat_grp(titl_ges,connmat_grp)   % args: connect_matrix, compone
 %                 if ns<=9; highlight(h,G.Nodes.Name(i),'NodeColor','c');end
             end
 %             title({titl+" - ForceLevel: "+int2str(m),"Connectivity Matrix - Component: "+int2str(j)});
-            component = ["1-5 Hz","5-12 Hz","12-35 Hz"];
+            component = ["1-5 Hz","5-12 Hz","12-40 Hz"];
             ylabel(strcat("Component: ", component(j)),'FontSize',13.5,'Fontweight', 'bold');
 %             title({titl,component(j)});
         end

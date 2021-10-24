@@ -31,7 +31,7 @@ function [delta, probs, stats] = bx_plt2(bx_XX,i,a,type)
         txt_bajo = bajo-diff*0.07;
         text(1.7,txt_bajo-diff*0.035,'One-sample t-test p-values','FontSize',9,'fontweight', 'bold');
         for ii=1:size(bx_XX,3)
-            if (p(ii)<0.05); col ='red'; else; col ='w'; end
+            if (p(ii)<0.0027);col='red'; elseif(p(ii)<0.05);col=[0.9500 0.5250 0.0980]; else; col ='w'; end
             txt = [num2str(p(ii), 2)];
             text(ii-0.1,txt_bajo, txt, 'FontSize',9, 'Color',col);
         end
@@ -55,7 +55,7 @@ function [delta, probs, stats] = bx_plt2(bx_XX,i,a,type)
                 stats(jj) = st;
             end
             jj = jj+1;
-            if (h); col ='red'; else; col ='w'; end
+            if (p<0.0027); col = 'red'; elseif (p<0.05); col=[0.9500 0.5250 0.0980]; else; col ='w'; end
             ylimpos = ylimpos+yspace1 + off;
             bx_connector([lim-j ii+1],[ylimpos ylimpos],col);
             ypos = ylimpos + yspace2;
