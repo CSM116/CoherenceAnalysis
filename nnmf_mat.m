@@ -60,8 +60,9 @@ function [H_temp,W_temp] = nnmf_mat(m,w,i,k,coh_x,freqs,nf,fl,numGestures,titl,G
         if (titl=="Amputees");limy = 0.925;else; limy = 0.8;end
         set(gca,'xlim',[0 35],'ylim',[0 limy]);
 %         title({titl+" - ForceLev. "+int2str(m),GestList(w)});
-        title({titl,GestList(w)});
-        legend(["1-5 Hz","5-12 Hz","12-40 Hz"]);
+        title({GestList(w)},'Fontsize',12);
+        lgd = legend(["1-5 Hz","5-12 Hz","12-40 Hz"]);
+        lgd.FontSize = 10;
         set(gcf,'color','w'); % Set background colour to white
     end
 end

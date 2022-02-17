@@ -3,7 +3,7 @@ clear;
 close all;
 clc;
 %% Loop all participants
-who = "able";
+who = "amp";
 rest = 0;                           % 1: include resting / 0: discard resting
 if who == "able"
     from = 1;    fin = 10;    fl = 3;    titl = "Able-bodied";    numGestures = 6 + rest;
@@ -49,7 +49,7 @@ catch
         order = 4;                          % order        
         Gestures = cell(3,fl*numGestures*numberTrials);
         %% Load marked labels file
-        load(strcat('../Participants/Par',partID,'/Marks',partID,'.mat'));
+        load(strcat('Participants/Par',partID,'/Marks',partID,'.mat'));
         g_off = 0;
         count = 0;
         %% Process Participant Data
@@ -80,13 +80,13 @@ catch
     %             progest = filtered_data;
             %}
             %% Data Segmentation Variables
-            offset = 1000;                          % Offset from marks
+            offset = 1000;                              % Offset from marks
             offset1 = 750;
-            windowLength = 3000-1;                  % Lenght of data to extract
+            windowLength = 3000-1;                      % Lenght of data to extract
             %% Segment Location Variables
-            TotTrials = 5;                          % Total number of trials
-            numchannels = 4;                        % Number of active channels
-            fileID = 5*count+(file-1)*numberTrials*2; % Column position of next trial   
+            TotTrials = 5;                              % Total number of trials
+            numchannels = 4;                            % Number of active channels
+            fileID = 5*count+(file-1)*numberTrials*2;   % Column position of next trial   
             g_off = 0;
             hol=zeros(windowLength+1,numchannels);
             if (mod(file,((numGestures-1)/2))==1 && rest==1)
@@ -100,7 +100,7 @@ catch
                 g_off = 5;
                 count = count+1;
             end
-            ge = 1;                                 % Starting position of marker
+            ge = 1;                                     % Starting position of marker
             %% 1-5 Trials
             for g = 1:numberTrials
                 hol(:,:) = progest(Marks{file,2}(1,ge)+offset:Marks{file,2}(1,ge)+offset+windowLength,1:numchannels);
@@ -125,10 +125,10 @@ catch
                     a = Gestures{1,i+numberTrials*(w-1)+numGestures*numberTrials*(m-1)};
                     filt_data = filtfilt(b2, a2, a);
                     % Plot Tappering of window
-%                     subplot(3,1,1); plot(tuk_win);
-%                     subplot(3,1,2); plot(filt_data);
+%                     subplot(3,1,1); plot(tuk_win,'linew',1.15);
+%                     subplot(3,1,2); plot(filt_data,'linew',1.15);
                     filt_data = filt_data.*tuk_win;             % Taper data with Tukey window using 0.05 ratio of cosine-tapered section length
-%                     subplot(3,1,3); plot(filt_data);
+%                     subplot(3,1,3); plot(filt_data,'linew',1.15);set(gcf,'color','w');
                     hilb_data = hilbert(filt_data);
 %                     hilb_data = abs(hilb_data);
                     gestF{m,w}(:,:,i) = hilb_data;
@@ -487,21 +487,27 @@ catch
                     complex(zeros((winsize*L-15000)/2,4),...
                     zeros((winsize*L-15000)/2,4))];
                 [Cxy,nf] = manual_coherence(conc_trials(:,1),conc_trials(:,2),winsize,ovelp,fs);
+%                 [Cxy,nf] = mscohere(conc_trials(:,1),conc_trials(:,2),nuttallwin(winsize),ovelp,[],fs);Cxy=Cxy(1:513);nf=nf(1:513)';
                 coh{m,w}(:,1) = Cxy;
                 clear Cxy; clear nf;
                 [Cxy,~] = manual_coherence(conc_trials(:,1),conc_trials(:,3),winsize,ovelp,fs);
+%                 [Cxy,~] = mscohere(conc_trials(:,1),conc_trials(:,3),nuttallwin(winsize),ovelp,[],fs);Cxy=Cxy(1:513);
                 coh{m,w}(:,2) = Cxy;
                 clear Cxy; clear nf;
                 [Cxy,~] = manual_coherence(conc_trials(:,1),conc_trials(:,4),winsize,ovelp,fs);
+%                 [Cxy,~] = mscohere(conc_trials(:,1),conc_trials(:,4),nuttallwin(winsize),ovelp,[],fs);Cxy=Cxy(1:513);
                 coh{m,w}(:,3) = Cxy;
                 clear Cxy; clear nf;
                 [Cxy,~] = manual_coherence(conc_trials(:,2),conc_trials(:,3),winsize,ovelp,fs);
+%                 [Cxy,~] = mscohere(conc_trials(:,2),conc_trials(:,3),nuttallwin(winsize),ovelp,[],fs);Cxy=Cxy(1:513);
                 coh{m,w}(:,4) = Cxy;
                 clear Cxy; clear nf;
                 [Cxy,~] = manual_coherence(conc_trials(:,2),conc_trials(:,4),winsize,ovelp,fs);
+%                 [Cxy,~] = mscohere(conc_trials(:,2),conc_trials(:,4),nuttallwin(winsize),ovelp,[],fs);Cxy=Cxy(1:513);
                 coh{m,w}(:,5) = Cxy;
                 clear Cxy; clear nf;
                 [Cxy,nf] = manual_coherence(conc_trials(:,3),conc_trials(:,4),winsize,ovelp,fs);
+%                 [Cxy,nf] = mscohere(conc_trials(:,3),conc_trials(:,4),nuttallwin(winsize),ovelp,[],fs);Cxy=Cxy(1:513);nf=nf(1:513)';
                 coh{m,w}(:,6) = Cxy;
                 clear Cxy;
             end
@@ -649,37 +655,38 @@ for m=1:fl                              % Force Levels
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Plot PSD
-%{
+% %{
 colororder([0.75 0.17 0.17;0.80 0.42 0.00;0.37 0.15 0.70;0.15 0.55 0.10]);
 muscle = {'FCR' 'BR' 'EDC' 'FCU'};
 set(gcf,'color','w');
-tiledlayout(2,2,'Padding','compact','TileSpacing','tight');
-for w=1:numCommGes
+tiledlayout(1,4,'Padding','compact','TileSpacing','tight');
+for w=1:4 % Muscle
 	nexttile(w);
-    for j=1:4   % No of channels
-        plot(f,psd_ges{1,w}(:,j),'Linew',1.25);
-        set(gca,'xlim',[0 45]);
+    for j=1:numCommGes   % Gestures
+        plot(f,psd_ges{1,j}(:,w),'Linew',1.5);
+        set(gca,'FontSize',11,'xlim',[0 45]);
         hold on;set(gca, 'box','off');
-        title(muscle(w),'Fontsize',12);
-        if(w==3||w==4);xlabel('Frequency [Hz]','Fontsize',11);end
-        if(w==1||w==3);ylabel('PSD (mV^2/Hz)','Fontsize',11);end
+%         title(muscle(w),'Fontsize',13.5);
+%         if(1);set(gca, 'box','off','XTickLabel',[],'XTick',[]);end
+        if(w==1);xlabel('Frequency [Hz]','Fontsize',12.5);ylabel('PSD (mV^2/Hz)','Fontsize',12.5);end
     end
 end
-legend(GestList(1:numCommGes),'FontSize',11);
+% legend(GestList(1:numCommGes),'FontSize',11);
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Plot Coherence Matrix - Gesture Results
-%{
+% %{
 mupair_list = ["FCR-BR","FCR-EDC","FCR-FCU","BR-EDC","BR-FCU","EDC-FCU"];
 mu_list = ["FCR","BR","EDC","FCU"];
 figure;%('DefaultAxesFontSize',17);
 set(gcf,'color','w');
 mu_pairs = 6;
-tiledlayout(numCommGes,numCommGes,'Padding', 'compact','TileSpacing', 'compact');
+tiledlayout(numCommGes,numCommGes,'Padding', 'loose','TileSpacing', 'tight');
 newcolors = {[0.75 0.17 0.17],[0.80 0.42 0.00],[0.37 0.15 0.70],[0.15 0.55 0.10]};
+limitx = 40;
 for i=1:mu_pairs
     if (i>=4 && i<6); s=3;
         elseif (i>=6); s=6; else; s=1; 
@@ -689,14 +696,22 @@ for i=1:mu_pairs
         plot(nf,coh_ges{1,j}(:,i).','LineWidth',1.5,'color',newcolors{j});
         set(gca, 'box','off','XTickLabel',[],'XTick',[],'YTickLabel',[],'YTick',[]);
         hold on;
-        set(gca,'xlim',[0 40],'ylim',[0 0.6]);
     end
+    if (i<=3)
+        limity=0.55;
+    elseif (i>3&&i<6)
+        limity=0.3;
+    else
+        limity = 0.4;
+    end
+    plot(nf,zci*ones(length(nf)),'k--','LineWidth',0.5);hold on;
+    set(gca,'FontSize',11,'xlim',[0 limitx],'ylim',[0 limity]);
     % Add Title
     if (i<=4)
         nexttile(i);
        	if (i==1)
 %             axis off;
-            set(gca,'box','off', 'XTickLabel',[],'XTick',[],'ylim',[0 0.6]);
+            set(gca,'FontSize',11,'box','off', 'XTickLabel',[],'XTick',[],'ylim',[0 limity]);
         end
         title({mu_list(i)},'FontSize',14);  
     end
@@ -716,26 +731,37 @@ for i=1:mu_pairs
             set(gca, 'box','off','YTickLabel',[],'YTick',[]);   
         else
             set(gca, 'box','off');
-            xlabel('Frequency [Hz]');
-            ylabel('MSC');
+            xlabel('Frequency [Hz]','FontSize',12);
+            ylabel('MSC','FontSize',12);
         end
         hold on;
-        set(gca,'xlim',[0 40],'ylim',[0 0.6]);
     end
+    plot(nf,zci*ones(length(nf)),'k--','LineWidth',0.5);
+    if (i==1)
+        limity=0.3;
+    elseif (i==2||i==4)
+        limity=0.4;
+    else
+        limity = 0.55;
+    end
+    if (i==1);legend([GestList(1:numCommGes),"Confidence Interval"],'FontSize',10.45);end
+    set(gca,'FontSize',11,'xlim',[0 limitx],'ylim',[0 limity]);
     if (i<=4)
         nexttile(1+4*(i-1));
         if (i==1)
-            text(-0.325, 0.3,mu_list(1),'FontSize',14,'FontWeight', 'Bold');    
+            text(-0.325, 0.3, mu_list(1),'FontSize',14,'FontWeight', 'Bold');
+        elseif (i==2)
+            text(-12, 0.15, mu_list(i),'FontSize',14,'FontWeight', 'Bold');
+        elseif (i==3)
+            text(-12, 0.2, mu_list(i),'FontSize',14,'FontWeight', 'Bold');
         else
-            if (i==2)
-                legend(GestList(1:numCommGes),'FontSize',11);
-            end
-            text(-13, 0.3,mu_list(i),'FontSize',14,'FontWeight', 'Bold');
+            text(-12, 0.3, mu_list(i),'FontSize',14,'FontWeight', 'Bold');
         end
     end
 end
 nexttile(numCommGes^2);
-set(gca,'box','off','YTickLabel',[],'YTick',[],'xlim',[0 40]);
+set(gca,'FontSize',11,'box','off','YTickLabel',[],'YTick',[],'xlim',[0 limitx]);
+% set(gcf,'renderer','painters')
 % legend(GestList(1:numCommGes),'FontSize',11);
 %}
 %% Plot Coherence - Muscle Pairs / CI
@@ -845,7 +871,7 @@ for m=1:forces
         nf,forces,numCommGes,titl,GestList,0); % Change last value to 1 for plotting
 end
 %%%%%% NNMF gesture %%%%%%
-% figure;tiledlayout(forces,numCommGes,'TileSpacing','compact');
+% figure;tiledlayout(forces,numCommGes,'Padding','compact','TileSpacing','compact');
 for m=1:forces                              
     for w=1:numCommGes
         [nnmf_ges{m,w}.H, nnmf_ges{m,w}.W] = nnmf_mat(m,w,0,k,coh_ges,freqs,...
@@ -954,7 +980,7 @@ bx_metrics = {bx_CC,bx_NS,bx_ED};
 [delta,probs] = bx_plt(bx_metrics,k,varDescr,GestList,titl,0,'w');
 %}
 %% Boxplots All Participants using Participants
-% %{
+%{
 % GE
 [bx_CC,bx_NS,bx_ED,bx_GE] = bx_plt_prep(numCommGes,from,fin,adjmat_part);
 tmp_bx = num2cell(bx_GE(:,:,:,from:fin), [1 2 3]);
@@ -1012,17 +1038,11 @@ end
 %% Group Connectivity Matrix 
 % plt_connmat_grp(titl,adjmat_grp);
 %% per Gesture
-% %{
-figure;
-for gest=1:numCommGes
-    plt_connmat_grp(GestList{gest},adjmat_avpar(1,gest));
-%     plt_connmat_grp(GestList{gest},adjmat_ges(1,gest));
-end
-%}
+plt_connmat_ges(GestList,adjmat_avpar);
 %% per Participant
-%{
-plt_connmat_grp(titl,par,adjmat_part{1,par}(:,gest));   
-%}
+for i=from:fin
+    plt_connmat_ges(GestList,adjmat_part{1,i});
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 

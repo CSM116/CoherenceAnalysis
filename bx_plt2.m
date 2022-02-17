@@ -5,12 +5,17 @@ function [delta, probs, stats] = bx_plt2(bx_XX,i,a,type)
     newcolors = [0.75 0.17 0.17;0.80 0.42 0.00;0.37 0.15 0.70;0.15 0.55 0.10];
     boxplot(tmp,'whisker', inf, 'Colors', newcolors);
     %Plot individual points for amputee participants
-    %{
-    hold on
+%      %{
+    mark_size = 34;
+    hold on;
     for i=1:size(tmp,2)
-        scatter(i*ones(size(tmp,1),1),tmp(:,i),40,1.2*newcolors(i,:),'filled','MarkerEdgeColor',0.8*newcolors(i,:));
+        scatter(i*ones(size(tmp,1),1),tmp(:,i),mark_size,1.2*newcolors(i,:),'filled','o','MarkerEdgeColor',0.8*newcolors(i,:));
+%         scatter(i*ones(4,1),tmp(1:4,i),mark_size,1.2*newcolors(i,:),'filled','s','MarkerEdgeColor',0.8*newcolors(i,:));
+%         scatter(i*ones(4,1),tmp(5:8,i),mark_size,1.2*newcolors(i,:),'filled','o','MarkerEdgeColor',0.8*newcolors(i,:));
+%         scatter(i*ones(4,1),tmp(9:12,i),mark_size,1.2*newcolors(i,:),'filled','^','MarkerEdgeColor',0.8*newcolors(i,:));
         hold on;
     end
+%     legend('Participant-1','Participant-2','Participant-3');
     %}
     set(findobj(gca,'type','line'),'linew',1.1)
     med_lines = findobj(gcf, 'type', 'line', 'Tag', 'Median');

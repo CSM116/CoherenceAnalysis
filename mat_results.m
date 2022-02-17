@@ -81,7 +81,7 @@ for kk=1:k  % index component
         col = 'black';
         str = '';
     end
-    text(x_pos,y_pos,strcat('k',int2str(kk)," - ",strcat('\color{',col,'}'),'{\itp}:'," ",num2str(prb,2)," ",str),'FontSize',13);
+    text(x_pos,y_pos,strcat('k',int2str(kk)," - ",'{\itt-val}:'," ",num2str(sta,3)," ",strcat('\color{',col,'}'),'{\itp}:'," ",num2str(prb,2)," ",str),'FontSize',13);
     % Middle position
     x_pos = x_pos - 0.2;
     y_pos = y_pos + 0.2;
@@ -97,7 +97,7 @@ for kk=1:k  % index component
             col = 'black';
             str = '';
         end
-        text(x_pos,y_pos,strcat('k',int2str(kk)," - ",strcat('\color{',col,'}'),'{\itp}:'," ",num2str(prb,2)," ",str),'FontSize',13);
+        text(x_pos,y_pos,strcat('k',int2str(kk)," - ",'{\itt-val}:'," ",num2str(sta,3)," ",strcat('\color{',col,'}'),'{\itp}:'," ",num2str(prb,2)," ",str),'FontSize',13);
         x_pos = x_pos + 0.2;
     end
     % First positions
@@ -115,7 +115,7 @@ for kk=1:k  % index component
             col = 'black';
             str = '';
         end
-        text(x_pos,y_pos,strcat('k',int2str(kk)," - ",strcat('\color{',col,'}'),'{\itp}:'," ",num2str(prb,2)," ",str),'FontSize',13);
+        text(x_pos,y_pos,strcat('k',int2str(kk)," - ",'{\itt-val}:'," ",num2str(sta,3)," ",strcat('\color{',col,'}'),'{\itp}:'," ",num2str(prb,2)," ",str),'FontSize',13);
         x_pos = x_pos + 0.2;
     end
 end
@@ -135,31 +135,13 @@ for kk=1:k  % index component
         col = 'black';
         str = '';
     end
-    text(x_pos,y_pos,strcat('k',int2str(kk)," - ",strcat('\color{',col,'}'),'{\itp}:'," ",num2str(prb,2)," ",str),'FontSize',13);
+    text(x_pos,y_pos,strcat('k',int2str(kk)," - ",'{\itt-val}:'," ",num2str(sta,3)," ",strcat('\color{',col,'}'),'{\itp}:'," ",num2str(prb,2)," ",str),'FontSize',13);
     % Middle position
     x_pos = x_pos - 0.2;
     y_pos = y_pos + 0.2;
     for i = 1:2
         prb = probs{kk,1}(i+1);
         delt = -delta{kk,1}(i+1);
-        sta = stats{kk,1}(i+1);
-        if (prb<alpha)
-            if(prb<adj_alpha); col='red'; else; col='orange'; end
-            if (delt<0); sym = '\color{red}\downarrow'; else ; sym = '\color{blue}\uparrow'; end
-            str = strcat('\color{black}','\Delta:'," ",num2str(delt,3),"% ",sym);
-        else
-            col = 'black';
-            str = '';
-        end
-        text(x_pos,y_pos,strcat('k',int2str(kk)," - ",strcat('\color{',col,'}'),'{\itp}:'," ",num2str(prb,2)," ",str),'FontSize',13);
-        y_pos = y_pos - 0.2;
-    end
-    % First positions
-    y_pos = y_pos + 0.6;
-    x_pos = x_pos - 0.2;
-    for i = 1:3
-        prb = probs{kk,1}(i+3);
-        delt = -delta{kk,1}(i+3);
         sta = stats{kk,1}(i+1).tstat;
         if (prb<alpha)
             if(prb<adj_alpha); col='red'; else; col='orange'; end
@@ -169,7 +151,25 @@ for kk=1:k  % index component
             col = 'black';
             str = '';
         end
-        text(x_pos,y_pos,strcat('k',int2str(kk)," - ",strcat('\color{',col,'}'),'{\itp}:'," ",num2str(prb,2)," ",str),'FontSize',13);
+        text(x_pos,y_pos,strcat('k',int2str(kk)," - ",'{\itt-val}:'," ",num2str(sta,3)," ",strcat('\color{',col,'}'),'{\itp}:'," ",num2str(prb,2)," ",str),'FontSize',13);
+        y_pos = y_pos - 0.2;
+    end
+    % First positions
+    y_pos = y_pos + 0.6;
+    x_pos = x_pos - 0.2;
+    for i = 1:3
+        prb = probs{kk,1}(i+3);
+        delt = -delta{kk,1}(i+3);
+        sta = stats{kk,1}(i+3).tstat;
+        if (prb<alpha)
+            if(prb<adj_alpha); col='red'; else; col='orange'; end
+            if (delt<0); sym = '\color{red}\downarrow'; else ; sym = '\color{blue}\uparrow'; end
+            str = strcat('\color{black}','\Delta:'," ",num2str(delt,3),"% ",sym);
+        else
+            col = 'black';
+            str = '';
+        end
+        text(x_pos,y_pos,strcat('k',int2str(kk)," - ",'{\itt-val}:'," ",num2str(sta,3)," ",strcat('\color{',col,'}'),'{\itp}:'," ",num2str(prb,2)," ",str),'FontSize',13);
         y_pos = y_pos - 0.2;
     end
 end
