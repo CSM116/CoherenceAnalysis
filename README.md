@@ -3,6 +3,8 @@
 ## Overview
 This MATLAB script processes mechanomyography (MMG) data from multiple participants to analyze coherence and power spectral density (PSD) metrics. The script performs data preprocessing, segmentation, and analysis of muscle activation patterns for different gestures, including statistical and coherence-based evaluations.
 
+The entire code in this repository is based on the PhD work of Carlos Sebastian Mancero Castillo.
+
 ## Features
 - **Data Preprocessing:**
   - Loads MMG data from different participants.
